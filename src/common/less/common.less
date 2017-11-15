@@ -1,0 +1,118 @@
+ /** 清除内外边距 **/
+
+ body,
+ h1,
+ h2,
+ h3,
+ h4,
+ h5,
+ h6,
+ hr,
+ p,
+ blockquote,
+ /* structural elements 结构元素 */
+
+ dl,
+ dt,
+ dd,
+ ul,
+ ol,
+ li,
+ /* list elements 列表元素 */
+
+ pre,
+ /* text formatting elements 文本格式元素 */
+
+ form,
+ fieldset,
+ legend,
+ button,
+ input,
+ textarea,
+ /* form elements 表单元素 */
+
+ th,
+ td
+ /* table elements 表格元素 */
+
+ {
+     margin: 0;
+     padding: 0;
+ }
+
+ @bottomHeight: calc(100vh-12.2rem);
+ @colorTips: #888888;
+ @colorIcon-strong: #999;
+ @colorIcon-weak: rgba(0, 0, 0, 0.25);
+ body {
+     background: #ececec;
+     font-family: '微软雅黑', 'Helvetica Neue', sans-serif, SimHei;
+     ;
+     font-size: 14px;
+     color: #1a1a1a;
+     margin: 0;
+     padding: 0;
+ }
+
+ .ftRight {
+     text-align: right;
+ }
+
+ .fnLeft {
+     float: left;
+ }
+
+ .fnClear:after {
+     content: '\20';
+     display: block;
+     height: 0;
+     clear: both;
+ }
+
+ .ftLeft {
+     text-align: left;
+ }
+
+ .ftCenter {
+     text-align: center;
+ }
+
+ .ftRight {
+     text-align: right;
+ }
+
+ .fnHide {
+     display: none;
+ }
+
+ .fnHideImportant {
+     display: none!important;
+ }
+
+ .ftCursor {
+     cursor: pointer;
+ }
+
+ .fnAnimate {
+     transition: all 0.5s;
+ }
+
+ .fnHeight100 {
+     height: 100%;
+     overflow: hidden;
+ }
+
+ /* 对input allowClear的支持，暂时先放在这里。待组件封装后进行迁移*/
+ :global(.ant-input-affix-wrapper):hover{ 
+    .inputClose{
+      display: block;
+    }
+  }
+ .inputClose {
+     color: @colorIcon-weak;
+     display: none;
+ }
+
+ .inputClose:hover {
+     color: @colorIcon-strong;
+ }
