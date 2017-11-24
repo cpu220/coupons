@@ -1,17 +1,19 @@
 import React from 'react';
-import { Form, Select, Input, Button, Icon, message, Checkbox } from 'antd';
+import { Form, Select, Input, Button, Icon, message, Checkbox, DatePicker } from 'antd';
 
 import { ImageTools, randomString, getJSON, postJSON } from '../../common/ApiUtil';
 // import { getJSON, postJSON } from '../../common/request';
 import { requestList } from '../../common/requestList';
 import shallowCompare from 'react-addons-shallow-compare';
-import styles from './login.less';
+import styles from './guestForm.less';
 
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 const Search = Input.Search;
 const ButtonGroup = Button.Group;
+
+const { TextArea } = Input;
 
 class App extends React.Component {
   constructor(props) {
@@ -23,12 +25,12 @@ class App extends React.Component {
 
     this.formItemLayout = {
       labelCol: {
-        xs: { span: 6 },
+        xs: { span: 24 },
         sm: { span: 6 },
       },
       wrapperCol: {
-        xs: { span: 18 },
-        sm: { span: 18 },
+        xs: { span: 24 },
+        sm: { span: 14 },
       },
     };
 
@@ -57,60 +59,54 @@ class App extends React.Component {
    */
   handleSubmit(e) {
     e.preventDefault();
-    // const _this = this;
-    // const json = city;
-    // console.log(json);
+    const _this = this; 
     this.props.form.validateFields((err, values) => {
-      postJSON({
-        url: requestList.login,
-        data: {
-          username: values.username,
-          password: values.password,
-        },
-      }).then((res) => {
-        console.log('success');
-        console.log(res);
-        location.href = `http://pick.mawc.top/#/admin`;
-      }).catch((err) => {
-        console.log(err);
-      })
+      // getJSON(requestList.login).then((res) => {
+      //   console.log(res);
+      // }).catch((err) => {
+      //   console.log(err);
+      // })
+      _this.props.onSaveForm(values);
     });
   }
   onChange(value) {
     console.log(value);
+  }
+  onDatePickerChange(e) {
+    console.log(e);
   }
   render() {
 
     const { typeSelect, groupId, step } = this.state;
     const { getFieldDecorator } = this.props.form;
     return (
-      <div>
-        <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem>
-            {getFieldDecorator('username', {
-              rules: [{ required: true, message: 'Please input your username!' }],
-            })(
-              <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Username" />
-              )}
-          </FormItem>
-          <FormItem>
-            {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please input your Password!' }],
-            })(
-              <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder="Password" />
-              )}
-          </FormItem>
-          <FormItem>
-            {/* {getFieldDecorator('remember', {
-            valuePropName: 'checked',
-            initialValue: true,
-          })(
-            <Checkbox>Remember me</Checkbox>
-          )} */}
-            <Button type="primary" htmlType="submit" className="login-form-button">
-              Log in
-          </Button>
+      <div className={styles.fnBody}>
+        <Form onSubmit={this.handleSubmit} >
+          <FormItem
+            {...this.formItemLayout}
+            label="劵号"
+          >
+            {getFieldDecorator('code', {
 
+            })(
+              <Input placeholder="请输入劵号" />
+              )}
+          </FormItem>
+          <FormItem
+            {...this.formItemLayout}
+            label="密码"
+          >
+            {getFieldDecorator('password', {
+
+            })(
+              <Input type="password" placeholder="请输入密码" />
+              )}
+          </FormItem>
+          
+          <FormItem> 
+            <Button type="primary" htmlType="submit" className="login-form-button">
+              下一步
+            </Button> 
           </FormItem>
         </Form>
       </div>

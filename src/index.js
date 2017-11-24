@@ -9,6 +9,11 @@ const app = dva();
 
 // 3. Model
 // app.model(require('./models/example'));
+app.model(require('./models/listModels.jsx'));
+app.model(require('./models/guestModels.jsx'));
+app.model(require('./models/couponItemModel.jsx'));
+
+
 
 // 4. Router
 app.router(require('./router'));

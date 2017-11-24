@@ -23,7 +23,7 @@ class requestTools {
       }
     }
 
-    if (window.location.hostname === 'pub.mail.163.com') {
+    if (window.location.hostname === 'pick.mawc.top') {
       // 非本地开发，带cookie认证
       this.state.credentials = 'include';
     }
@@ -97,9 +97,11 @@ class requestTools {
    * @memberof requestTools
    */
   shunt(response, resolve, reject) {
-    if (response.data.code === 200 || !response.data.hasOwnProperty('code')) {
+    if (response.data.errorCode === 200 || !response.data.hasOwnProperty('errorCode')) {
       resolve(response.data);
-    } else {
+    }else if (response.data.errorCode === 401) {
+      location.href = 'http://pick.mawc.top/#/login';
+    }else {
       message.error(response.data.errMsg || response.data.content || response.data.msg || '系统错误', 2, function () {
         reject(response.data);
       });
