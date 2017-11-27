@@ -7,7 +7,7 @@ import { requestList } from '../../common/requestList';
 import shallowCompare from 'react-addons-shallow-compare';
 // import styles from './login.less';
 
-// const json = require('http://7xqv6o.com1.z0.glb.clouddn.com/chinaData2.json');
+const json = require('../../common/city');
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -19,9 +19,10 @@ const { TextArea } = Input;
 class App extends React.Component {
   constructor(props) {
     super(props);
-
+    const { goodsName } = this.props.GUEST;
     this.state = {
-      options: [],
+      options: json || [],
+      goodsName: goodsName, 
     };
 
     this.formItemLayout = {
@@ -37,15 +38,14 @@ class App extends React.Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
-    this.createAddress = this.createAddress.bind(this);
     this.disabledDate = this.disabledDate.bind(this);
   }
 
 
   componentWillReceiveProps(nextProps) {
-    // this.setState({
-    //   typeSelect: nextProps.pageConfig.listConfig.typeSelect,
-    // });
+    this.setState({
+      goodsName: nextProps.GUEST.goodsName,
+    });
 
   }
 
@@ -82,30 +82,27 @@ class App extends React.Component {
     // Can not select days before today and today
     return current && current.valueOf() < Date.now();
   }
-  
-  createAddress() {
-    const { getFieldDecorator } = this.props.form;
-    getJSON({
-      url: '/chinaData',
-    }).then((res) => {
-      const options = res.content;
-      this.setState({
-        options,
-      });
-    }).catch((err) => {
-      return '';
-    });
-  }
+
+   
 
   render() {
     const { typeSelect, groupId, step, options } = this.state;
     const { getFieldDecorator } = this.props.form;
-
-    this.createAddress();
-
+    const { goodsName } = this.props.GUEST;
+ 
     return (
       <div>
         <Form onSubmit={this.handleSubmit} >
+          <FormItem
+            {...this.formItemLayout}
+            label="商品名"
+          >
+            {getFieldDecorator('goodsName', {
+              initialValue: goodsName
+            })(
+              <Input disabled={true} />
+              )}
+          </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="省市"
@@ -114,7 +111,7 @@ class App extends React.Component {
 
             })(
               <Cascader options={options} placeholder="点击选择省市" changeOnSelect />,
-              )}
+            )}
           </FormItem>
 
           <FormItem
@@ -127,7 +124,7 @@ class App extends React.Component {
               <Input
                 placeholder="请输入收件人地址"
               />,
-              )}
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
@@ -139,7 +136,7 @@ class App extends React.Component {
               <Input
                 placeholder="请输入收件人姓名"
               />,
-              )}
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
@@ -148,20 +145,20 @@ class App extends React.Component {
             {getFieldDecorator('phone', {
             })(
               <Input prefix={<Icon type="phone" />} />,
-              )}
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="希望发货时间"
           >
-            {getFieldDecorator('password', {
+            {getFieldDecorator('dt_pick_order', {
 
             })(
-              <DatePicker 
+              <DatePicker
                 disabledDate={this.disabledDate}
                 showToday={false}
               />,
-              )}
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
@@ -171,7 +168,7 @@ class App extends React.Component {
 
             })(
               <TextArea rows={4} />,
-              )}
+            )}
           </FormItem>
 
           <FormItem>

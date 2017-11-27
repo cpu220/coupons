@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Select, Input, Button, Icon, message, Checkbox, DatePicker } from 'antd';
 
-import { ImageTools, randomString, getJSON, postJSON } from '../../common/ApiUtil';
+import { ImageTools, randomString, getJSON, postJSON, GetQueryString } from '../../common/ApiUtil';
 // import { getJSON, postJSON } from '../../common/request';
 import { requestList } from '../../common/requestList';
 import shallowCompare from 'react-addons-shallow-compare';
@@ -18,7 +18,7 @@ class App extends React.Component {
     super(props);
     const { coupon } = this.props.COUPONITEM;
     this.state = {
-      coupon: coupon,
+      coupon,
     };
 
     this.formItemLayout = {
@@ -40,20 +40,18 @@ class App extends React.Component {
   componentWillReceiveProps(nextProps) {
     const { coupon } = nextProps.COUPONITEM;
     this.state = {
-      coupon: coupon,
+      coupon,
     };
-
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-
     return shallowCompare(this, nextProps, nextState);
   }
 
   /**
-   * 表单提交 
-   * 
-   * @param {any} e 
+   * 表单提交
+   *
+   * @param {any} e
    * @memberof App
    */
   handleSubmit(e) {
@@ -61,11 +59,20 @@ class App extends React.Component {
     // const _this = this;
 
     this.props.form.validateFields((err, values) => {
-      getJSON(requestList.login).then((res) => {
+      const id = GetQueryString('id');
+      postJSON({
+        url: `${requestList.couponEdit}/${id}`,
+        data: {
+          status: values.status,
+          trackName: values.trackName,
+          trackCode: values.trackCode,
+          goodsName: values.goodsName,
+        },
+      }).then((res) => {
         console.log(res);
       }).catch((err) => {
-        console.log(err);
-      })
+        message.error(err.errorMsg || '系统错误');
+      });
     });
   }
   onChange(value) {
@@ -75,7 +82,6 @@ class App extends React.Component {
     console.log(e);
   }
   render() {
-
     const { coupon } = this.state;
     const { getFieldDecorator } = this.props.form;
     return (
@@ -88,8 +94,8 @@ class App extends React.Component {
             {getFieldDecorator('code', {
               initialValue: coupon.code,
             })(
-              <Input />
-              )}
+              <Input />,
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
@@ -98,76 +104,111 @@ class App extends React.Component {
             {getFieldDecorator('codePwd', {
               initialValue: coupon.codePwd,
             })(
-              <Input />
-              )}
+              <Input />,
+            )}
+          </FormItem>
+          <FormItem
+            {...this.formItemLayout}
+            label="商品名"
+          >
+            {getFieldDecorator('goodsName', {
+              initialValue: coupon.goodsName,
+            })(
+              <Input />,
+            )}
+          </FormItem>
+          <FormItem
+            {...this.formItemLayout}
+            label="快递公司"
+          >
+            {getFieldDecorator('trackName', {
+              initialValue: coupon.trackName,
+            })(
+              <Input />,
+            )}
+          </FormItem>
+          <FormItem
+            {...this.formItemLayout}
+            label="快递单号"
+          >
+            {getFieldDecorator('trackCode', {
+              initialValue: coupon.trackCode,
+            })(
+              <Input />,
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="卡卷创建时间"
           >
             {getFieldDecorator('dt_add', {
-              initialValue: moment(coupon.dt_add||''),
+              initialValue: moment(coupon.dt_add || ''),
             })(
-              <DatePicker onChange={this.onDatePickerChange} />
-              )}
+              <DatePicker onChange={this.onDatePickerChange} />,
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="提货申请时间"
           >
             {getFieldDecorator('dt_pick', {
-              initialValue: moment(coupon.dt_pick||''),
+              initialValue: moment(coupon.dt_pick || ''),
             })(
-              <DatePicker onChange={this.onDatePickerChange} />
-              )}
+              <DatePicker onChange={this.onDatePickerChange} />,
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="提货预约时间"
           >
             {getFieldDecorator('dt_pick_order', {
-              initialValue: moment(coupon.dt_pick_order||''),
+              initialValue: moment(coupon.dt_pick_order || ''),
             })(
-              <DatePicker onChange={this.onDatePickerChange} />
-              )}
+              <DatePicker onChange={this.onDatePickerChange} />,
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="发货时间"
           >
             {getFieldDecorator('dt_track', {
-              initialValue: moment(coupon.dt_track||''),
+              initialValue: moment(coupon.dt_track || ''),
             })(
-              <DatePicker 
-                onChange={this.onDatePickerChange} 
-              />
-              )}
+              <DatePicker
+                onChange={this.onDatePickerChange}
+              />,
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="备注"
           >
             {getFieldDecorator('comment', {
-              
+
             })(
-              <TextArea rows={4} />
-              )}
+              <TextArea rows={4} />,
+            )}
           </FormItem>
           <FormItem
             {...this.formItemLayout}
             label="卡状态"
           >
             {getFieldDecorator('status', {
-
+              initialValue: coupon.status,
             })(
               <Select >
-                <Option value="unUse">未激活</Option>
+                {/* <Option value="unUse">未激活</Option>
                 <Option value="readyUse">已售卖</Option>
                 <Option value="orderPick" >已预约</Option>
                 <Option value="tracked">已发货</Option>
-                <Option value="unabled">已停用</Option>
-              </Select>
-              )}
+                <Option value="unabled">已停用</Option> */}
+                <Option value="0" >未激活</Option>
+                <Option value="1" >已售卖</Option>
+                <Option value="2" >已预约</Option>
+                <Option value="3" >已发货</Option>
+                <Option value="4" >停用</Option>
+              </Select>,
+            )}
           </FormItem>
 
           <FormItem>

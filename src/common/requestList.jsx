@@ -12,6 +12,8 @@ const online = {
   couponCreate: '/couponCreate', // 批量添加卡券 POST /couponCreate @params goodsName(商品名称) num(卡券数量)
   couponList: '/couponList', // 卡券列表 GET  @params goodsName,code(券号),trackCode(快递单号)
   couponDetail: '/couponDetail', // 卡券详情 GET /couponDetail/{couponId}
+  couponEdit: 'couponEdit', // POST /couponEdit/{couponId} @params status(4停用/0未激活/1已售卖),trackName(快递公司),trackCode(快递单号),有status的时候不要有trackName和trackCode
+  CouponCheck: 'CouponCheck', // 验证卡券账号密码以及验证码 POST /CouponCheck @params captcha,couponCode,couponPwd
 };
 
 const mock = {

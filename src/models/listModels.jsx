@@ -1,6 +1,6 @@
-import { getJSON, GetQueryString } from '../common/ApiUtil';
+import { getJSON } from '../common/ApiUtil';
 import { requestList } from '../common/requestList';
-import { message } from 'antd';
+// import { message } from 'antd';
 const pageSize = 20;
 export default {
 
@@ -19,7 +19,7 @@ export default {
     },
     update(state, action) {
       return Object({}, state, action.payload);
-    }
+    },
   },
   effects: {
     *fetch({ payload }, { call, put }) {  // eslint-disable-line

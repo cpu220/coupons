@@ -102,7 +102,7 @@ class requestTools {
     }else if (response.data.errorCode === 401) {
       location.href = 'http://pick.mawc.top/#/login';
     }else {
-      message.error(response.data.errMsg || response.data.content || response.data.msg || '系统错误', 2, function () {
+      message.error(response.data.errorMsg ||'系统错误', 2, function () {
         reject(response.data);
       });
     }

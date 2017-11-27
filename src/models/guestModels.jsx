@@ -4,7 +4,8 @@ export default {
   namespace: 'GUEST',
 
   state: {
-    step: 1
+    step: 2,
+    goodsName: '',
   },
 
   subscriptions: {

@@ -5,6 +5,7 @@ import { ImageTools, randomString, getJSON, postJSON } from '../../common/ApiUti
 // import { getJSON, postJSON } from '../../common/request';
 import { requestList } from '../../common/requestList';
 import shallowCompare from 'react-addons-shallow-compare';
+import Captcha from '../common/captcha';
 import styles from './guestForm.less';
 
 
@@ -20,7 +21,8 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-
+      random: Date.parse(new Date()),
+      loading: false,
     };
 
     this.formItemLayout = {
@@ -36,6 +38,7 @@ class App extends React.Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
+    // this.initCaptcha= this.initCaptcha.bind(this);
   }
 
 
@@ -59,14 +62,21 @@ class App extends React.Component {
    */
   handleSubmit(e) {
     e.preventDefault();
-    const _this = this; 
+    const _this = this;
     this.props.form.validateFields((err, values) => {
-      // getJSON(requestList.login).then((res) => {
-      //   console.log(res);
-      // }).catch((err) => {
-      //   console.log(err);
-      // })
-      _this.props.onSaveForm(values);
+      _this.setState({ loading: true });
+
+      getJSON({
+        url: `${requestList.CouponCheck}?couponCode=${values.couponCode}&couponPwd=${values.couponPwd}&captcha=${values.captcha}`,
+      }).then((res) => {
+        _this.setState({ loading: false }); 
+        _this.props.onSaveForm(res);
+      }).catch((err) => {
+        _this.setState({
+          random: Date.parse(new Date()),
+          loading: false,
+        });
+      });
     });
   }
   onChange(value) {
@@ -75,9 +85,18 @@ class App extends React.Component {
   onDatePickerChange(e) {
     console.log(e);
   }
+  // 初始化验证码
+  // initCaptcha() {
+  //   getJSON({
+  //     url: '/captcha',
+  //   }).then((res) => {
+  //     console.log(res);
+  //   }).catch(err => console.log(err));
+  // }
   render() {
+    // this.initCaptcha();
 
-    const { typeSelect, groupId, step } = this.state;
+    const { typeSelect, groupId, step, random, loading, } = this.state;
     const { getFieldDecorator } = this.props.form;
     return (
       <div className={styles.fnBody}>
@@ -86,7 +105,7 @@ class App extends React.Component {
             {...this.formItemLayout}
             label="劵号"
           >
-            {getFieldDecorator('code', {
+            {getFieldDecorator('couponCode', {
 
             })(
               <Input placeholder="请输入劵号" />
@@ -96,17 +115,35 @@ class App extends React.Component {
             {...this.formItemLayout}
             label="密码"
           >
-            {getFieldDecorator('password', {
+            {getFieldDecorator('couponPwd', {
 
             })(
               <Input type="password" placeholder="请输入密码" />
               )}
           </FormItem>
-          
-          <FormItem> 
-            <Button type="primary" htmlType="submit" className="login-form-button">
+          <FormItem
+            {...this.formItemLayout}
+            label="验证码"
+          >
+            {getFieldDecorator('captcha', {
+
+            })(
+              <Input type="captcha" placeholder="请输入验证码" className={styles.captchaInput} />
+              )}
+            <Captcha
+              random={random}
+            />
+
+          </FormItem>
+
+          <FormItem>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+            >
               下一步
-            </Button> 
+            </Button>
           </FormItem>
         </Form>
       </div>

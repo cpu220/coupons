@@ -123,6 +123,12 @@ class App extends React.Component {
       case '1':
         DOM = (<span className={`${comstyles.ftSuccess}`}>已售卖</span>);
         break;
+      case '2':
+        DOM = (<span className={`${comstyles.ftInfo}`}>已预约</span>);
+        break;
+      case '3':
+        DOM = (<span className={`${comstyles.ftWarn}`}>已发货</span>);
+        break;
       case '4':
         DOM = (<span className={`${comstyles.ftInfo}`}>停用</span>);
         break;
@@ -175,7 +181,7 @@ class App extends React.Component {
 
   render() {
     const _this = this;
-    const { couponList, modalVisible, pagination,item } = this.state;
+    const { couponList, modalVisible, pagination, item } = this.state;
     const { getFieldDecorator } = this.props.form;
     // this.createTable();
     const columns = [{
@@ -197,7 +203,7 @@ class App extends React.Component {
       dataIndex: 'status',
       key: 'status',
       render: (text, record) => {
-        // const DOM = createStatus(record.status);
+        // const DOM = _this.createStatus(record.status);
         const DOM = _this.createCouponStatus(record.status);
         return DOM;
       },
@@ -240,7 +246,7 @@ class App extends React.Component {
               <tr><td className={styles.title}>状态</td><td>{_this.createCouponStatus(item.status)}</td></tr>
               <tr><td className={styles.title}>收件人</td><td>{item.name}</td></tr>
               <tr><td className={styles.title}>收件地址</td><td>{item.address}</td></tr>
-              
+
               <tr><td className={styles.title}>卡券创建时间</td><td>{item.dt_add}</td></tr>
               <tr><td className={styles.title}>提货申请时间</td><td>{item.dt_pick}</td></tr>
               <tr><td className={styles.title}>提货预约时间</td><td>{item.dt_pick_order}</td></tr>

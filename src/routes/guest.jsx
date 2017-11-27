@@ -12,14 +12,14 @@ const Step = Steps.Step;
 
 const App = ({ dispatch, GUEST }) => {
 
-  
+
 
   const saveForm1 = (e) => {
     console.log(e);
     // 根据返回结构来判断跳转2 还是 3
     dispatch({
       type: 'GUEST/update',
-      payload: { step: 2 },
+      payload: { step: 2, goodsName: e.data.goodsName },
     });
   }
 
@@ -28,7 +28,7 @@ const App = ({ dispatch, GUEST }) => {
     dispatch({
       type: 'GUEST/update',
       payload: { step: 3 },
-    }); 
+    });
   }
 
   return (
@@ -41,8 +41,8 @@ const App = ({ dispatch, GUEST }) => {
           <Step title="第三步" description="结束" />
         </Steps>
       </div>
-      <div>
-      <Alert
+      <div className={styles.alertContent}>
+        <Alert
           message="重要提示"
           description="因xxxx的原因，我就是不想发货"
           type="error"
@@ -50,11 +50,13 @@ const App = ({ dispatch, GUEST }) => {
       </div>
       <div className={`${GUEST.step === 1 ? '' : comstyles.fnHide}`}>
         <GuestForm
+          GUEST={GUEST}
           onSaveForm={saveForm1}
         />
       </div>
       <div className={`${GUEST.step === 2 ? '' : comstyles.fnHide}`}>
         <EditGuessInfo
+          GUEST={GUEST}
           onSaveForm={saveForm2}
         />
       </div>
