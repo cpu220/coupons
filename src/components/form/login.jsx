@@ -6,12 +6,15 @@ import { ImageTools, randomString, getJSON, postJSON } from '../../common/ApiUti
 import { requestList } from '../../common/requestList';
 import shallowCompare from 'react-addons-shallow-compare';
 import styles from './login.less';
+import xlsx from 'node-xlsx';
+import FileSaver from 'file-saver';
+import ExcellentExport from 'ExcellentExport';
 
 
 const FormItem = Form.Item;
-const Option = Select.Option;
-const Search = Input.Search;
-const ButtonGroup = Button.Group;
+// const Option = Select.Option;
+// const Search = Input.Search;
+// const ButtonGroup = Button.Group;
 
 class App extends React.Component {
   constructor(props) {
@@ -33,7 +36,8 @@ class App extends React.Component {
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.onChange = this.onChange.bind(this);
+
+    this.test = this.test.bind(this);
   }
 
 
@@ -57,9 +61,6 @@ class App extends React.Component {
    */
   handleSubmit(e) {
     e.preventDefault();
-    // const _this = this;
-    // const json = city;
-    // console.log(json);
     this.props.form.validateFields((err, values) => {
       postJSON({
         url: requestList.login,
@@ -68,16 +69,21 @@ class App extends React.Component {
           password: values.password,
         },
       }).then((res) => {
-        console.log('success');
-        console.log(res);
         location.href = `http://pick.mawc.top/#/admin`;
       }).catch((err) => {
         console.log(err);
       })
     });
   }
-  onChange(value) {
-    console.log(value);
+
+  test() {
+    // const data = [[1, 2, 3]];
+    // // var buffer = xlsx.build([{name: "mySheetName", data: data}]);
+    // let blob = new Blob([JSON.stringify([{ "a": "1" }, { "a": "2" }])]);
+
+    // FileSaver.saveAs(blob, 'test.xlsx');
+    // return ExcellentExport.convert({ anchor: this, filename: 'data_123.array', format: 'xlsx'},[{name: 'Sheet Name Here 1', from: {table: 'datatable'}}]);
+
   }
   render() {
 
@@ -113,6 +119,9 @@ class App extends React.Component {
 
           </FormItem>
         </Form>
+        <div>
+          <Button onClick={this.test}>  test </Button>
+        </div>
       </div>
     );
   }

@@ -4,8 +4,10 @@ export default {
   namespace: 'GUEST',
 
   state: {
-    step: 2,
-    goodsName: '',
+    step: 3, // 当前流程
+    goodsName: '', // 商品名称
+    goodsID: '', // 商品id
+    goodsPwd: '', // 商品密码
   },
 
   subscriptions: {

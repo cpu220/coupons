@@ -10,25 +10,27 @@ import styles from './captcha.less';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    const { random } = this.props;
+    // const { random } = this.props;
     this.state = {
-      random,
+      random: Date.parse(new Date()),
     };
-
-
     this.change = this.change.bind(this);
   }
 
 
-  componentWillReceiveProps(nextProps) {
-    const { random } = nextProps;
-    this.state = {
-      random,
-    };
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   const { random } = nextProps;
+  //   this.state = {
+  //     random,
+  //   };
+  // }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
+    if (nextState.random === this.state.random) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   change() {
@@ -39,7 +41,7 @@ class App extends React.Component {
 
   render() {
     const { random } = this.state;
-
+    // const random = Date.parse(new Date());
     return (
       <img className={styles.captcha} src={`/captcha?t=${random}`} onClick={this.change} title="点击更换验证码" />
     );

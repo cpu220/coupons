@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Table, Modal, Button } from 'antd';
+import { Form, Table, Modal, Button, Input } from 'antd';
 import { getJSON, postJSON } from '../../common/ApiUtil';
 import { requestList } from '../../common/requestList';
 import shallowCompare from 'react-addons-shallow-compare';
@@ -27,7 +27,6 @@ class App extends React.Component {
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.createTable = this.createTable.bind(this);
     this.createStatus = this.createStatus.bind(this);
     this.createCouponStatus = this.createCouponStatus.bind(this);
     this.modalOK = this.modalOK.bind(this);
@@ -37,7 +36,9 @@ class App extends React.Component {
       couponList: couponList,
       modalVisible: false,
       item: {},
-
+      goodsName: '',
+      code: '',
+      trackCode: '',
       pagination: {
         total: total,
         pageSize: pageSize,
@@ -72,23 +73,38 @@ class App extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     const _this = this;
+    const { pagination } = this.state;
+    const { dispatch } = this.props;
+    let goodsName, code, trackCode
     this.props.form.validateFields((err, values) => {
+
+      goodsName = values.goodsName || '';
+      code = values.code || '';
+      trackCode = values.trackCode || '';
+
+      getJSON({
+        url: `${requestList.couponList}?goodsName=${goodsName}&code=${code}&trackCode=${trackCode}&pageSize=${pagination.pageSize}&current=${0}`,
+      }).then((res) => {
+        _this.setState({
+          goodsName: goodsName,
+          code: code,
+          trackCode: trackCode,
+        })
+
+        dispatch({
+          type: 'LIST/save',
+          payload: {
+            couponList: res.data.couponList || [],
+            total: res.data.total || 0,
+          },
+        });
+      }).catch((err) => {
+        console.log(err);
+      });
 
     });
   }
-  createTable() {
-    const _this = this;
-    // getJSON({
-    //   url: '/couponList',
-    // }).then((res) => {
-    //   _this.setState({
-    //     data: res.data.couponList,
-    //   }); 
-    // }).catch((err) => {
-    //   console.log(err);
-    // })
 
-  };
   // 创建状态
   createStatus(status) {
     let DOM;
@@ -161,11 +177,60 @@ class App extends React.Component {
    * @memberof App
    */
   onChangePage(current) {
-    const { pagination } = this.state;
+    this.resestList(current);
+  }
+/**
+ * 启用
+ * 
+ * @param {any} id 
+ * @memberof App
+ */
+onActivate(id) {
+    postJSON({
+      url: requestList.changeStatus,
+      data: {
+        couponId: id,
+        status: 1,
+      }
+    }).then((res) => {
+      console.log(res);
+      message.info('激活成功');
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+  /**
+   * 停用
+   * 
+   * @param {any} id 
+   * @memberof App
+   */
+  onStop(id) {
+    postJSON({
+      url: requestList.changeStatus,
+      data: {
+        couponId: id,
+        status: 4,
+      }
+    }).then((res) => {
+      console.log(res);
+      message.info('已成功停用');
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+  /**
+   * 
+   * 
+   * @param {any} current 
+   * @memberof App
+   */
+  resestList(current) {
+    const { pagination, goodsName, code, trackCode } = this.state;
     const { dispatch } = this.props;
 
     getJSON({
-      url: `${requestList.couponList}?pageSize=${pagination.pageSize}&current=${current - 1}`,
+      url: `${requestList.couponList}?goodsName=${goodsName}&code=${code}&trackCode=${trackCode}&pageSize=${pagination.pageSize}&current=${current - 1}`,
     }).then((res) => {
       dispatch({
         type: 'LIST/save',
@@ -183,16 +248,18 @@ class App extends React.Component {
     const _this = this;
     const { couponList, modalVisible, pagination, item } = this.state;
     const { getFieldDecorator } = this.props.form;
-    // this.createTable();
+
     const columns = [{
       title: '劵号',
       dataIndex: 'code',
       key: 'code',
-      render: text => <a href="#">{text}</a>,
     }, {
       title: '商品名',
       dataIndex: 'goodsName',
       key: 'goodsName',
+      render: (text, record) => {
+        return <a href={`#/editCoupon?id=${record.id}`}>{record.goodsName}</a>
+      }
     }, {
       title: '收件人',
       dataIndex: 'name',
@@ -215,13 +282,42 @@ class App extends React.Component {
           <a onClick={this.showCouponDetail.bind(this, record)} >查看详情</a>
           <span className="ant-divider" />
           <a href={`#/editCoupon?id=${record.id}`}>编辑</a>
-          {/* <span className="ant-divider" /> */}
-          {/* <a href="#">删除</a> */}
+          <span className="ant-divider" />
+          <a onClick={this.onActivate.bind(this, record.id)} >启用</a>
+          <span className="ant-divider" />
+          <a onClick={this.onStop.bind(this, record.id)}>停用</a>
         </span>
       ),
     }];
     return (
       <div>
+        <div className={styles.formContent}>
+          <Form layout="inline" onSubmit={this.handleSubmit}>
+            <FormItem>
+              {getFieldDecorator('goodsName', {})(
+                <Input placeholder="商品名" />
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('code', {})(
+                <Input placeholder="券号" />
+              )}
+            </FormItem>
+            <FormItem>
+              {getFieldDecorator('trackCode', {})(
+                <Input placeholder="快递单号" />
+              )}
+            </FormItem>
+            <FormItem>
+              <Button
+                type="primary"
+                htmlType="submit"
+              >
+                搜索
+              </Button>
+            </FormItem>
+          </Form>
+        </div>
         <Table
           columns={columns}
           dataSource={couponList}
@@ -246,11 +342,14 @@ class App extends React.Component {
               <tr><td className={styles.title}>状态</td><td>{_this.createCouponStatus(item.status)}</td></tr>
               <tr><td className={styles.title}>收件人</td><td>{item.name}</td></tr>
               <tr><td className={styles.title}>收件地址</td><td>{item.address}</td></tr>
-
+              <tr><td className={styles.title}>快递公司</td><td>{item.trackName}</td></tr>
+              <tr><td className={styles.title}>快递单号</td><td>{item.trackCode}</td></tr>
               <tr><td className={styles.title}>卡券创建时间</td><td>{item.dt_add}</td></tr>
               <tr><td className={styles.title}>提货申请时间</td><td>{item.dt_pick}</td></tr>
               <tr><td className={styles.title}>提货预约时间</td><td>{item.dt_pick_order}</td></tr>
               <tr><td className={styles.title}>发货时间</td><td>{item.dt_track}</td></tr>
+              <tr><td className={styles.title}>客户备注</td><td>{item.memo}</td></tr>
+              <tr><td className={styles.title}>备注</td><td>{item.remark}</td></tr>
             </tbody>
           </table>
         </Modal>

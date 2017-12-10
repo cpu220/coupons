@@ -14,6 +14,9 @@ const online = {
   couponDetail: '/couponDetail', // 卡券详情 GET /couponDetail/{couponId}
   couponEdit: 'couponEdit', // POST /couponEdit/{couponId} @params status(4停用/0未激活/1已售卖),trackName(快递公司),trackCode(快递单号),有status的时候不要有trackName和trackCode
   CouponCheck: 'CouponCheck', // 验证卡券账号密码以及验证码 POST /CouponCheck @params captcha,couponCode,couponPwd
+  CouponPick: '/CouponPick', // 提货申请 POST /CouponPick @params captcha,couponCode,couponPwd,dt_pick_order(发货时间)
+  CouponTrack: '/CouponTrack', // 快递单号查询  POST /CouponTrack @params captcha,couponCode,couponPwd
+  changeStatus: '/changeStatus', //修改状态 POST /changeStatus @params couponId ,status
 };
 
 const mock = {

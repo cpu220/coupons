@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Select, Input, Button, Icon, message, Checkbox, DatePicker } from 'antd';
+import { Form, Select, Input, Button, message, Radio } from 'antd';
 
 import { ImageTools, randomString, getJSON, postJSON } from '../../common/ApiUtil';
 // import { getJSON, postJSON } from '../../common/request';
@@ -10,11 +10,8 @@ import styles from './guestForm.less';
 
 
 const FormItem = Form.Item;
-const Option = Select.Option;
-const Search = Input.Search;
-const ButtonGroup = Button.Group;
+const RadioGroup = Radio.Group;
 
-const { TextArea } = Input;
 
 class App extends React.Component {
   constructor(props) {
@@ -37,15 +34,11 @@ class App extends React.Component {
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.onChange = this.onChange.bind(this);
-    // this.initCaptcha= this.initCaptcha.bind(this);
   }
 
 
   componentWillReceiveProps(nextProps) {
-    // this.setState({
-    //   typeSelect: nextProps.pageConfig.listConfig.typeSelect,
-    // });
+
 
   }
 
@@ -64,35 +57,38 @@ class App extends React.Component {
     e.preventDefault();
     const _this = this;
     this.props.form.validateFields((err, values) => {
-      _this.setState({ loading: true });
+      if (!err) {
+        _this.setState({ loading: true });
 
-      getJSON({
-        url: `${requestList.CouponCheck}?couponCode=${values.couponCode}&couponPwd=${values.couponPwd}&captcha=${values.captcha}`,
-      }).then((res) => {
-        _this.setState({ loading: false }); 
-        _this.props.onSaveForm(res);
-      }).catch((err) => {
-        _this.setState({
-          random: Date.parse(new Date()),
-          loading: false,
-        });
-      });
+        if (values.type === 1) {
+          getJSON({
+            url: `${requestList.CouponCheck}?couponCode=${values.couponCode}&couponPwd=${values.couponPwd}&captcha=${values.captcha}`,
+          }).then((res) => {
+            _this.setState({ loading: false });
+            _this.props.onSaveForm(res, values);
+          }).catch((err) => {
+            _this.setState({
+              random: Date.parse(new Date()),
+              loading: false,
+            });
+          });
+        } else if (values.type === 2) {
+          getJSON({
+            url: `${requestList.CouponTrack}?couponCode=${values.couponCode}&couponPwd=${values.couponPwd}&captcha=${values.captcha}`,
+          }).then((res) => {
+            _this.setState({ loading: false });
+            console.log(res);
+          }).catch((err) => {
+            _this.setState({
+              random: Date.parse(new Date()),
+              loading: false,
+            });
+          });
+        }
+      } 
     });
   }
-  onChange(value) {
-    console.log(value);
-  }
-  onDatePickerChange(e) {
-    console.log(e);
-  }
-  // 初始化验证码
-  // initCaptcha() {
-  //   getJSON({
-  //     url: '/captcha',
-  //   }).then((res) => {
-  //     console.log(res);
-  //   }).catch(err => console.log(err));
-  // }
+
   render() {
     // this.initCaptcha();
 
@@ -106,7 +102,7 @@ class App extends React.Component {
             label="劵号"
           >
             {getFieldDecorator('couponCode', {
-
+              rules: [{ required: true, message: '请填写券号' }],
             })(
               <Input placeholder="请输入劵号" />
               )}
@@ -116,6 +112,7 @@ class App extends React.Component {
             label="密码"
           >
             {getFieldDecorator('couponPwd', {
+              rules: [{ required: true, message: '请填写券密码' }],
 
             })(
               <Input type="password" placeholder="请输入密码" />
@@ -123,20 +120,31 @@ class App extends React.Component {
           </FormItem>
           <FormItem
             {...this.formItemLayout}
+            label="操作类型"
+          >
+            {getFieldDecorator('type', {
+              initialValue: 1,
+            })(
+              <RadioGroup>
+                <Radio value={1}>提货操作</Radio>
+                <Radio value={2}>快递查询</Radio>
+              </RadioGroup>
+              )}
+          </FormItem>
+          <FormItem
+            {...this.formItemLayout}
             label="验证码"
           >
             {getFieldDecorator('captcha', {
+              rules: [{ required: true, message: '请填写当前验证码' }],
 
             })(
               <Input type="captcha" placeholder="请输入验证码" className={styles.captchaInput} />
               )}
-            <Captcha
-              random={random}
-            />
+            <Captcha />
 
           </FormItem>
-
-          <FormItem>
+          <FormItem className={styles.btnContent}>
             <Button
               type="primary"
               htmlType="submit"

@@ -35,7 +35,6 @@ export default {
             getJSON({
               url: `${requestList.couponDetail}/${id}`,
             }).then((res) => {
-              console.log(res);
               dispatch({
                 type: 'save',
                 payload: {
